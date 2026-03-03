@@ -3,14 +3,14 @@ services:
   - type: web
     name: talent-scout-backend
     env: docker
-    repo: https://github.com/onkar-2006/Stock-Agent
+    repo: https://github.com/onkar-2006/internship-assesment
     rootDir: backend
     plan: free
     region: ohio
     envVars:
       - key: PORT
         value: 8000
-      # Reference the Environment Group here
+      
       - fromGroup: talentscout-secrets
       - key: RENDER_EXTERNAL_URL
         fromService:
@@ -18,16 +18,15 @@ services:
           name: talent-scout-backend
           property: host
 
-  # --- Frontend Service ---
+  
   - type: web
     name: talent-scout-frontend
     env: docker
-    repo: https://github.com/onkar-2006/Stock-Agent
+    repo: https://github.com/onkar-2006/internship-assesment
     rootDir: frontend 
     plan: free
     region: ohio
     envVars:
-      # Reference the same Environment Group here
       - fromGroup: talentscout-secrets
       - key: BACKEND_URL
         fromService:
