@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import HumanMessage
 from agent import talent_scout_app
+from schema import CandidateProfile
 import uuid
 import os
 
@@ -23,6 +24,7 @@ class ChatInput(BaseModel):
 @app.get("/")
 def health_check():
     return {"status": "online", "message": "TalentScout API is running"}
+
 @app.post("/chat")
 async def chat_endpoint(chat_input: ChatInput):
     config = {"configurable": {"thread_id": chat_input.thread_id}}
@@ -56,3 +58,4 @@ if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
+

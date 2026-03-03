@@ -30,7 +30,6 @@ def info_extractor_node(state: AgentState):
     Analyzes the latest message to update the CandidateProfile.
     """
     last_message = state["messages"][-1].content
-    
 
     extraction_query = EXTRACTION_PROMPT.format(
         current_profile=state["candidate_data"].dict(),
