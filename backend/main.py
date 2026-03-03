@@ -23,26 +23,23 @@ class ChatInput(BaseModel):
 @app.get("/")
 def health_check():
     return {"status": "online", "message": "TalentScout API is running"}
-
 @app.post("/chat")
 async def chat_endpoint(chat_input: ChatInput):
     config = {"configurable": {"thread_id": chat_input.thread_id}}
-    
-
+   
     inputs = {
         "messages": [HumanMessage(content=chat_input.message)],
-        "candidate_data": {
-            "full_name": "",
-            "email": "",
-            "phone": "",
-            "experience": "",
-            "position": "",
-            "tech_stack": []
-        },
+        "candidate_data": CandidateProfile(
+            full_name="",
+            email="",
+            phone="",
+            experience="",
+            position="",
+            tech_stack=[]
+        ),
         "phase": "screening" 
     }
     
- 
     result = talent_scout_app.invoke(inputs, config=config)
     
     latest_message = result["messages"][-1].content
