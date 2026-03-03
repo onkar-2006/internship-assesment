@@ -4,7 +4,7 @@ import uuid
 
 st.set_page_config(page_title="TalentScout | Hiring Assistant", page_icon="💼")
 
-st.title("💼 TalentScout Hiring Assistant")
+st.title("TalentScout Hiring Assistant")
 st.markdown("Welcome! I'm here to help with your initial application process.")
 
 
@@ -15,7 +15,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = [
         {"role": "assistant", "content": "Hello! I'm the TalentScout assistant. To get started, could you please tell me your full name and what position you're applying for?"}
     ]
-
 
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
@@ -52,4 +51,6 @@ if any(keyword in prompt.lower() for keyword in ["exit", "bye", "quit"]) if prom
     st.balloons()
     st.success("Conversation ended. Thank you for your time!")
     st.stop()
+
+
 

@@ -18,7 +18,6 @@ class AgentState(TypedDict):
     candidate_data: CandidateProfile
     phase: str  
 
-
 model = ChatGroq(
     temperature=0.2, 
     model_name="openai/gpt-oss-120b", 
