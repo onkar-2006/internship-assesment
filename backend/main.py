@@ -1,14 +1,29 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from agent import talent_scout_app
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import HumanMessage
+from agent import talent_scout_app
 import uuid
 
 app = FastAPI(title="TalentScout Backend")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 class ChatInput(BaseModel):
     message: str
     thread_id: str
+
+
+@app.get("/")
+def health_check():
+    return {"status": "online", "message": "TalentScout API is running"}
 
 @app.post("/chat")
 async def chat_endpoint(chat_input: ChatInput):
@@ -33,5 +48,7 @@ async def chat_endpoint(chat_input: ChatInput):
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+
 
 
