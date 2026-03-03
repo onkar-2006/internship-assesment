@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_core.messages import HumanMessage
 from agent import talent_scout_app
 import uuid
+import os
 
 app = FastAPI(title="TalentScout Backend")
 
@@ -20,24 +20,34 @@ class ChatInput(BaseModel):
     message: str
     thread_id: str
 
-
 @app.get("/")
 def health_check():
     return {"status": "online", "message": "TalentScout API is running"}
 
 @app.post("/chat")
 async def chat_endpoint(chat_input: ChatInput):
-   
     config = {"configurable": {"thread_id": chat_input.thread_id}}
     
 
-    inputs = {"messages": [HumanMessage(content=chat_input.message)]}
+    inputs = {
+        "messages": [HumanMessage(content=chat_input.message)],
+        "candidate_data": {
+            "full_name": "",
+            "email": "",
+            "phone": "",
+            "experience": "",
+            "position": "",
+            "tech_stack": []
+        },
+        "phase": "screening" 
+    }
     
+ 
     result = talent_scout_app.invoke(inputs, config=config)
     
     latest_message = result["messages"][-1].content
-    current_phase = result["phase"]
-    extracted_data = result["candidate_data"]
+    current_phase = result.get("phase", "screening")
+    extracted_data = result.get("candidate_data", {})
     
     return {
         "response": latest_message,
@@ -47,8 +57,5 @@ async def chat_endpoint(chat_input: ChatInput):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
-
-
-
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
