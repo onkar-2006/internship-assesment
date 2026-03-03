@@ -6,21 +6,23 @@ from langchain_groq import ChatGroq
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
-from schemas import CandidateProfile
+from schema import CandidateProfile
 from prompt import SYSTEM_PROMPT, EXTRACTION_PROMPT, TECHNICAL_ASSESSMENT_PROMPT
 
 load_dotenv()
 
+api_key = os.getenv("GROQ_API_KEY")
 
 class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], operator.add]
     candidate_data: CandidateProfile
     phase: str  
 
+
 model = ChatGroq(
     temperature=0.2, 
     model_name="openai/gpt-oss-120b", 
-    groq_api_key=os.getenv("GROQ_API_KEY")
+    groq_api_key=api_key
 )
 
 
@@ -36,18 +38,17 @@ def info_extractor_node(state: AgentState):
         user_input=last_message
     )
     
-
     obj_model = model.with_structured_output(CandidateProfile)
     updated_data = obj_model.invoke(extraction_query)
     
     return {"candidate_data": updated_data}
+
 
 def conversation_manager_node(state: AgentState):
     """
     Decides what to say to the user based on the current profile completeness.
     """
     data = state["candidate_data"]
-    
 
     missing_fields = [k for k, v in data.dict().items() if v is None or v == []]
     
@@ -62,6 +63,7 @@ def conversation_manager_node(state: AgentState):
     ])
     
     return {"messages": [response], "phase": "gathering"}
+
 
 def technical_interview_node(state: AgentState):
     """
@@ -80,6 +82,7 @@ def technical_interview_node(state: AgentState):
     
     return {"messages": [response]}
 
+
 def route_next_step(state: AgentState):
     if state["phase"] == "interviewing":
         return "interview"
@@ -88,6 +91,7 @@ def route_next_step(state: AgentState):
 
 workflow = StateGraph(AgentState)
 
+
 workflow.add_node("extract_data", info_extractor_node)
 workflow.add_node("gathering", conversation_manager_node)
 workflow.add_node("interview", technical_interview_node)
@@ -95,9 +99,7 @@ workflow.add_node("interview", technical_interview_node)
 
 workflow.set_entry_point("extract_data")
 
-
 workflow.add_edge("extract_data", "gathering")
-
 
 workflow.add_conditional_edges(
     "gathering",
@@ -112,4 +114,6 @@ workflow.add_edge("interview", END)
 
 memory = MemorySaver()
 talent_scout_app = workflow.compile(checkpointer=memory)
+
+
 

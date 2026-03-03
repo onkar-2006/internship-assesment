@@ -13,6 +13,8 @@ TONE: Professional, encouraging, and clear.
 """
 
 
+
+
 EXTRACTION_PROMPT = """
 Extract the candidate's professional details from the following conversation history. 
 

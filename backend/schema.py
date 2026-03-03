@@ -10,7 +10,7 @@ class CandidateProfile(BaseModel):
     current_location: Optional[str] = Field(None, description="The city or region where the candidate lives.")
     tech_stack: List[str] = Field(
         default_factory=list, 
-        description="A list of programming languages, frameworks, and tools (e.g., ['Python', 'React', 'FastAPI'])."
+        description="A list of programming languages, frameworks, and tools (e.g., ['Python', 'React', 'FastAPI']). "
     )
 
 class ChatRequest(BaseModel):
@@ -22,4 +22,6 @@ class ChatResponse(BaseModel):
     response: str
     phase: str  
     extracted_data: Dict  
+
+
 
